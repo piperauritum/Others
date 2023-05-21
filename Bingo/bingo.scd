@@ -75,7 +75,7 @@ Array.fill(5, {|i|
 
 ~call = {|bid|
 	~bingo.pause;
-	~wav.play;
+	s.sendMsg(\s_new, \wav, -1, 0, 0);
 	x = ~balls[~bid];
 	x.postln;
 	defer{
@@ -136,22 +136,22 @@ o = OSCFunc({|msg|
 
 
 /* sounds */
-~path = thisProcess.nowExecutingPath.dirname ++ "/";
-// s.sendMsg(\b_allocRead, 0, ~path++"test.wav");	// use test sound
-s.sendMsg(\b_allocRead, 10, ~path++"bingo.wav");
+// s.sendMsg(\b_allocRead, 0, "test.wav".resolveRelative);	// use test sound
+s.sendMsg(\b_allocRead, 10, "bingo.wav".resolveRelative);
 
-~wav = {
-	PlayBuf.ar(1, 10, 1.2, doneAction: 2)!2;
-};
+SynthDef(\wav, {
+	a = PlayBuf.ar(1, 10, 1.2, doneAction: 2);
+	Out.ar(0, a!2);
+}).add;
 
 
 /* listening */
-play{
+SynthDef(\listen, {
 	a = SoundIn.ar();
 	// a = PlayBuf.ar(1, loop:1);	// use test sound
 	b = Pitch.kr(a, median: 8)[0];
 	c = Changed.kr(cpsmidi(b), 1);
 	SendReply.kr(c, '/ping', b.cpsmidi.round);
 	// Out.ar(0, a!2);				// listen test sound
-};
+}).play;
 )
