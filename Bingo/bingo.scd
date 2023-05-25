@@ -155,3 +155,5 @@ SynthDef(\listen, {
 	// Out.ar(0, a!2);				// listen test sound
 }).play;
 )
+
+thisProcess.nowExecutingPath
